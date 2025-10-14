@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مدیریت تیکت‌ها - پنل ادمین</title>
+  <!-- فونت Vazirmatn -->
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Regular.woff2" rel="preload" as="font" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Bold.woff2" rel="preload" as="font" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Light.woff2" rel="preload" as="font" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Medium.woff2" rel="preload" as="font" crossorigin>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="tickets.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📩 لیست تیکت‌های کاربران</h1>
+
+    <table id="tickets-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>نام</th>
+          <th>ایمیل</th>
+          <th>موضوع</th>
+          <th>پیام</th>
+          <th>پاسخ ادمین</th>
+          <th>عملیات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- پر می‌شود با JS -->
+      </tbody>
+    </table>
+
+    <div class="logout">
+      <a href="/dashboard">🏠 بازگشت به داشبورد</a>
+      <span>|</span>
+      <a href="/logout">🚪 خروج</a>
+    </div>
+  </div>
+
+  <script>
+    // گرفتن لیست تیکت‌ها از API
+    async function loadTickets() {
+      try {
+        const res = await fetch("/api/tickets/admin");
+        const data = await res.json();
+        const tbody = document.querySelector("#tickets-table tbody");
+        tbody.innerHTML = "";
+
+        if (!data.success) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">خطا در بارگذاری تیکت‌ها!</td></tr>`;
+          return;
+        }
+
+        if (data.tickets.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#555;">هیچ تیکتی وجود ندارد.</td></tr>`;
+          return;
+        }
+
+        data.tickets.forEach(ticket => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${ticket.id}</td>
+            <td>${ticket.user_name}</td>
+            <td>${ticket.user_email}</td>
+            <td>${ticket.subject}</td>
+            <td class="message-cell">${ticket.message}</td>
+            <td class="response-cell">${ticket.admin_response || "⏳ هنوز پاسخی داده نشده"}</td>
+            <td class="action-cell">
+              <form onsubmit="return sendResponse(event, ${ticket.id})">
+                <textarea name="response" placeholder="پاسخ..." ${ticket.admin_response ? 'disabled' : ''} required></textarea>
+                <button type="submit" ${ticket.admin_response ? 'disabled style="background:#95a5a6; cursor:not-allowed;"' : ''}>${ticket.admin_response ? 'پاسخ داده شده' : 'ارسال پاسخ'}</button>
+              </form>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } catch (err) {
+        console.error("خطا در گرفتن تیکت‌ها:", err);
+        const tbody = document.querySelector("#tickets-table tbody");
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:red;">خطا در بارگذاری تیکت‌ها. لطفاً دوباره امتحان کنید.</td></tr>`;
+      }
+    }
+
+    // ارسال پاسخ ادمین
+    async function sendResponse(event, ticketId) {
+      event.preventDefault();
+      const textarea = event.target.querySelector("textarea");
+      const response = textarea.value.trim();
+      if (!response) {
+        alert("لطفاً قبل از ارسال پاسخی بنویسید!");
+        return false;
+      }
+
+      try {
+        const res = await fetch("/api/tickets/admin/respond", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ticketId, response }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert("✅ پاسخ با موفقیت ارسال شد!");
+          loadTickets();
+        } else {
+          alert("❌ خطا در ارسال پاسخ: " + (data.message || "مشکلی پیش آمد."));
+        }
+      } catch (err) {
+        console.error("خطا در ارسال پاسخ:", err);
+        alert("❌ خطا در ارسال پاسخ: مشکل شبکه یا سرور.");
+      }
+      return false;
+    }
+
+    document.addEventListener("DOMContentLoaded", loadTickets);
+  </script>
+</body>
+</html>

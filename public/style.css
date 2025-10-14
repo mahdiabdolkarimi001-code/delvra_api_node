@@ -1,0 +1,179 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
+    min-height: 100vh;       /* Minimum height of the viewport */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Gradient background */
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Login Container */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px; /* Add some padding for smaller screens */
+}
+
+/* Login Box */
+.login-box {
+    background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent white background */
+    padding: 40px 50px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    width: 100%;
+    max-width: 400px; /* Maximum width of the login box */
+    text-align: center;
+}
+
+/* Heading */
+.login-box h1 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    font-weight: 600;
+}
+
+/* Form Styling */
+#login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between input groups */
+}
+
+/* Input Group */
+.input-group {
+    text-align: left; /* Align labels to the left within the group */
+}
+
+/* Labels */
+.input-group label {
+    display: block; /* Make label a block element to take its own line */
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+    font-size: 1em;
+}
+
+/* Input Fields */
+.input-group input[type="text"],
+.input-group input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1em;
+    outline: none; /* Remove default outline */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions for focus effects */
+}
+
+/* Input Field Focus Effects */
+.input-group input[type="text"]:focus,
+.input-group input[type="password"]:focus {
+    border-color: #667eea; /* Change border color on focus */
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3); /* Add a subtle glow */
+}
+
+/* Submit Button */
+#login-form button[type="submit"] {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); /* Gradient button */
+    color: white;
+    padding: 14px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer; /* Indicate it's clickable */
+    transition: background 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+    margin-top: 10px; /* Add space above the button */
+}
+
+/* Button Hover/Active Effects */
+#login-form button[type="submit"]:hover {
+    background: linear-gradient(90deg, #764ba2 0%, #667eea 100%); /* Reverse gradient on hover */
+}
+
+#login-form button[type="submit"]:active {
+    transform: translateY(2px); /* Slight press effect */
+}
+
+/* Forgot Password Link */
+.forgot-password {
+    margin-top: 25px; /* Space between form and link */
+    font-size: 0.9em;
+}
+
+.forgot-password a {
+    color: #667eea;
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s ease;
+}
+
+.forgot-password a:hover {
+    color: #525db8; /* Darker shade on hover */
+    text-decoration: underline; /* Add underline on hover for clarity */
+}
+
+/* Basic Responsiveness */
+@media (max-width: 768px) {
+    .login-box {
+        padding: 30px;
+        margin: 20px; /* Add margin on smaller screens to prevent sticking */
+    }
+
+    .login-box h1 {
+        font-size: 1.8em;
+        margin-bottom: 25px;
+    }
+
+    .input-group input[type="text"],
+    .input-group input[type="password"],
+    #login-form button[type="submit"] {
+        padding: 10px 12px;
+        font-size: 0.95em;
+    }
+
+    #login-form button[type="submit"] {
+        padding: 12px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    .login-box {
+        padding: 25px;
+        margin: 10px;
+    }
+
+    .login-box h1 {
+        font-size: 1.6em;
+        margin-bottom: 20px;
+    }
+
+    .input-group label {
+        font-size: 0.9em;
+    }
+
+    .input-group input[type="text"],
+    .input-group input[type="password"],
+    #login-form button[type="submit"] {
+        font-size: 0.9em;
+    }
+
+    .forgot-password {
+        font-size: 0.85em;
+    }
+}

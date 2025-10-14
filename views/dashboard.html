@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد ادمین</title>
+    <link rel="stylesheet" href="/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- سایدبار -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>پنل ادمین</h3>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="dashboard" class="active"><i class="fas fa-tachometer-alt"></i> داشبورد</a></li>
+                    <li><a href="tickets"><i class="fas fa-ticket-alt"></i> تیکت‌ها</a></li>
+                    <li><a href="#users"><i class="fas fa-users"></i> کاربران</a></li>
+                    <li><a href="#settings"><i class="fas fa-cog"></i> اشتراکات ویژه</a></li>
+                    <li><a href="/logout"><i class="fas fa-sign-out-alt"></i> خروج</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- محتوای اصلی -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>داشبورد</h1>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                    <span>ادمین</span>
+                </div>
+            </header>
+
+            <section id="dashboard" class="content-section">
+                <!-- کارت‌ها -->
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-info">
+                            <h2>150</h2>
+                            <p>تیکت باز</p>
+                        </div>
+                        <i class="fas fa-folder-open icon"></i>
+                    </div>
+                    <div class="card">
+                        <div class="card-info">
+                            <h2>95%</h2>
+                            <p>رضایت مشتری</p>
+                        </div>
+                        <i class="fas fa-smile icon"></i>
+                    </div>
+                    <div class="card">
+                        <div class="card-info">
+                            <h2>85</h2>
+                            <p>تیکت حل شده</p>
+                        </div>
+                        <i class="fas fa-check-circle icon"></i>
+                    </div>
+                    <div class="card">
+                        <div class="card-info">
+                            <h2>320</h2>
+                            <p>کاربران فعال</p>
+                        </div>
+                        <i class="fas fa-users icon"></i>
+                    </div>
+                </div>
+
+                <!-- چارت‌ها -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>تیکت‌های ماهانه</h3>
+                        <canvas id="monthlyTicketsChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>عملکرد کاربران</h3>
+                        <canvas id="userPerformanceChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- سکشن‌های دیگر -->
+            <section id="tickets" class="content-section" style="display:none;">
+                <h2>مدیریت تیکت‌ها</h2>
+            </section>
+            <section id="users" class="content-section" style="display:none;">
+                <h2>مدیریت کاربران</h2>
+            </section>
+            <section id="settings" class="content-section" style="display:none;">
+                <h2>تنظیمات</h2>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // نمونه چارت‌ها
+        const ctx1 = document.getElementById('monthlyTicketsChart');
+        new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور'],
+                datasets: [{
+                    label: 'تیکت‌ها',
+                    data: [30, 45, 28, 60, 75, 50],
+                    borderColor: '#4a90e2',
+                    backgroundColor: 'rgba(74,144,226,0.3)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            }
+        });
+
+        const ctx2 = document.getElementById('userPerformanceChart');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['کاربر ۱','کاربر ۲','کاربر ۳','کاربر ۴'],
+                datasets: [{
+                    label: 'عملکرد',
+                    data: [85, 70, 95, 60],
+                    backgroundColor: '#764ba2'
+                }]
+            }
+        });
+    </script>
+</body>
+</html>

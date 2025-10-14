@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مدیریت اشتراک‌ها - پنل ادمین (شکیل و حرفه‌ای)</title>
+  <!-- لینک به فونت Vazirmatn از CDN -->
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Regular.woff2" rel="preload" as="font" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Bold.woff2" rel="preload" as="font" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Light.woff2" rel="preload" as="font" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Medium.woff2" rel="preload" as="font" crossorigin>
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-SemiBold.woff2" rel="preload" as="font" crossorigin>
+  
+  <style>
+    /* همان کدهای CSS که قبلاً تنظیم کردیم */
+    @font-face {
+      font-family: 'Vazirmatn';
+      src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Regular.woff2') format('woff2');
+      font-weight: normal;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Vazirmatn';
+      src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Bold.woff2') format('woff2');
+      font-weight: bold;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Vazirmatn';
+      src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-Medium.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Vazirmatn';
+      src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/web/fonts/Vazirmatn-SemiBold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    :root {
+      --primary-color: #3f51b5; /* Deep Blue */
+      --secondary-color: #673ab7; /* Deep Purple */
+      --accent-color: #00bcd4; /* Cyan */
+      --text-dark: #212121;
+      --text-light: #424242;
+      --bg-light: #f5f5f5;
+      --bg-white: #ffffff;
+      --border-color: #e0e0e0;
+      --shadow-light: rgba(0, 0, 0, 0.08);
+      --shadow-medium: rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+      font-family: "Vazirmatn", sans-serif;
+      direction: rtl;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      color: var(--text-light);
+      background: linear-gradient(135deg, #2c3e50 0%, #4a69bd 100%); /* Dark Blue to Medium Blue */
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1300px;
+      margin: 40px auto;
+      background: var(--bg-white);
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px var(--shadow-medium);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
+      z-index: 1;
+    }
+
+    .container::before, .container::after {
+      content: '';
+      position: absolute;
+      opacity: 0.1;
+      pointer-events: none;
+      z-index: -1;
+      background: var(--primary-color);
+    }
+
+    .container::before {
+      width: 250px; height: 250px;
+      border-radius: 50%;
+      top: -100px; right: -100px;
+      transform: rotate(45deg);
+      background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+      animation: rotateAbstract 20s linear infinite;
+    }
+
+    .container::after {
+      width: 300px; height: 300px;
+      border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+      bottom: -150px; left: -150px;
+      background: linear-gradient(135deg, var(--secondary-color), transparent);
+      animation: morphAbstract 15s ease-in-out infinite alternate;
+    }
+
+    @keyframes rotateAbstract {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes morphAbstract {
+      0% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+      50% { border-radius: 70% 30% 40% 60% / 60% 40% 50% 50%; }
+      100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      color: var(--text-dark);
+      font-size: 2.5em;
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 15px;
+      letter-spacing: 0.8px;
+      text-shadow: 0 2px 5px var(--shadow-light);
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--primary-color);
+      border-radius: 2px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+      background: var(--bg-light);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px var(--shadow-light);
+      animation: fadeIn 0.7s ease-out;
+    }
+
+    form input[type="email"],
+    form input[type="text"],
+    form input[type="number"] {
+      padding: 12px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 1em;
+      transition: all 0.3s ease;
+      background-color: var(--bg-white);
+      color: var(--text-dark);
+    }
+
+    form input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.15);
+    }
+
+    form button[type="submit"] {
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.05em;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px var(--shadow-light);
+      transition: all 0.3s ease;
+      grid-column: span 1 / auto;
+      min-width: 180px;
+    }
+
+    form button[type="submit"]:hover {
+      background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px var(--shadow-medium);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 30px;
+      background: var(--bg-white);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px var(--shadow-light);
+      animation: slideInUp 0.8s ease-out;
+    }
+
+    table th, table td {
+      border: none;
+      padding: 15px 18px;
+      text-align: center;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.95em;
+      color: var(--text-light);
+    }
+
+    table th {
+      background: var(--primary-color);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 1.05em;
+      position: sticky;
+      top: 0;
+      text-shadow: 0 1px 2px var(--shadow-light);
+    }
+
+    table tr:nth-child(even) {
+      background-color: var(--bg-light);
+    }
+
+    table tr:hover {
+      background-color: #e8eaf6;
+      transition: background-color 0.2s ease;
+    }
+
+    table select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background-color: var(--bg-white);
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%233f51b5%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%00-13.6-6.4H18.4c-5%200-9.3%201.8-12.9%205.4-3.6%203.6-5.4%207.8-5.4%2012.9%200%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.9%205.4s9.3-1.8%2012.9-5.4l128-127.9c3.6-3.6%205.4-7.7%205.4-12.8%200-5.1-1.8-9.4-5.4-13z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: left 8px center;
+      background-size: 12px;
+      padding-left: 30px;
+    }
+
+    table select:hover {
+      border-color: var(--primary-color);
+    }
+
+    table select:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+    }
+
+    table a.delete-btn {
+      color: #d32f2f;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 6px 12px;
+      border: 1px solid #ef9a9a;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      background-color: #ffebee;
+    }
+
+    table a.delete-btn:hover {
+      background-color: #d32f2f;
+      color: white;
+      box-shadow: 0 2px 8px rgba(211, 47, 47, 0.2);
+    }
+
+    .back-to-dashboard {
+      margin-top: 50px;
+      text-align: center;
+      font-size: 1.1em;
+      padding-top: 25px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .back-to-dashboard a {
+      color: var(--primary-color);
+      text-decoration: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      background: var(--bg-white);
+      border: 1px solid var(--primary-color);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px var(--shadow-light);
+      font-weight: 500;
+    }
+
+    .back-to-dashboard a:hover {
+      background: var(--primary-color);
+      color: white;
+      box-shadow: 0 6px 15px var(--shadow-medium);
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 1024px) {
+      .container { padding: 30px; }
+      table th, table td { padding: 12px 15px; font-size: 0.9em; }
+      h1 { font-size: 2.2em; }
+      form input, form button { font-size: 0.95em; padding: 10px 15px; }
+    }
+
+    @media (max-width: 768px) {
+      .container { margin: 20px auto; padding: 20px; }
+      h1 { font-size: 2em; margin-bottom: 30px; }
+      form { grid-template-columns: 1fr; gap: 15px; }
+      table { font-size: 0.8em; }
+      table th, table td { padding: 10px 8px; }
+      table select, table a.delete-btn { padding: 6px 10px; font-size: 0.8em; }
+      .container::before, .container::after { transform: scale(0.6); opacity: 0.05; }
+    }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 1.7em; }
+      form { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>مدیریت <span style="color: var(--primary-color);">اشتراک‌های</span> کاربران </h1>
+
+    <!-- فرم افزودن اشتراک (ایستا) -->
+    <div class="form-container">
+      <h3>افزودن اشتراک جدید</h3>
+      <form action="#" method="POST" id="add-subscription-form">
+        <input type="email" name="userEmail" placeholder="ایمیل کاربر" required>
+        <input type="text" name="plan" placeholder="نوع پلن" required>
+        <input type="number" name="durationDays" placeholder="مدت زمان (روز)" required>
+        <button type="submit">افزودن اشتراک</button>
+      </form>
+      <!-- توجه: در حالت HTML خالص، این فرم باید به یک endpoint واقعی ارسال شود یا با JS پردازش گردد. -->
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>ایمیل کاربر</th>
+          <th>پلن</th>
+          <th>تاریخ شروع</th>
+          <th>تاریخ پایان</th>
+          <th>وضعیت</th>
+          <th>عملیات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- داده‌های ایستا برای اشتراک‌ها -->
+        <tr>
+          <td>101</td>
+          <td>ali.rezaei@example.com</td>
+          <td>پریمیوم</td>
+          <td>1404/05/15</td> <!-- تاریخ شمسی -->
+          <td>1405/05/15</td>
+          <td>
+            <!-- فرم select ایستا -->
+            <select name="status" onchange="alert('تغییر وضعیت به: ' + this.value + ' (در حالت ایستا، این تغییر ذخیره نمی‌شود)')">
+              <option value="active" selected>فعال</option>
+              <option value="inactive">غیرفعال</option>
+              <option value="pending">در انتظار</option>
+              <option value="expired">منقضی شده</option>
+            </select>
+          </td>
+          <td>
+            <a href="#" class="delete-btn">حذف</a>
+          </td>
+        </tr>
+        <tr>
+          <td>102</td>
+          <td>sara.hoseini@example.com</td>
+          <td>طلایی</td>
+          <td>1404/06/01</td>
+          <td>1404/09/01</td>
+          <td>
+            <select name="status" onchange="alert('تغییر وضعیت به: ' + this.value + ' (در حالت ایستا، این تغییر ذخیره نمی‌شود)')">
+              <option value="active">فعال</option>
+              <option value="inactive" selected>غیرفعال</option>
+              <option value="pending">در انتظار</option>
+              <option value="expired">منقضی شده</option>
+            </select>
+          </td>
+          <td>
+            <a href="#" class="delete-btn">حذف</a>
+          </td>
+        </tr>
+        <tr>
+          <td>103</td>
+          <td>reza.ahmadi@example.com</td>
+          <td>پلاس</td>
+          <td>1404/07/10</td>
+          <td>نامحدود</td> <!-- یا تاریخ پایان دلخواه -->
+          <td>
+            <select name="status" onchange="alert('تغییر وضعیت به: ' + this.value + ' (در حالت ایستا، این تغییر ذخیره نمی‌شود)')">
+              <option value="active">فعال</option>
+              <option value="inactive">غیرفعال</option>
+              <option value="pending" selected>در انتظار</option>
+              <option value="expired">منقضی شده</option>
+            </select>
+          </td>
+          <td>
+            <a href="#" class="delete-btn">حذف</a>
+          </td>
+        </tr>
+         <tr>
+          <td>104</td>
+          <td>maryam.rahimi@example.com</td>
+          <td>پریمیوم</td>
+          <td>1403/12/20</td>
+          <td>1404/12/20</td>
+          <td>
+            <select name="status" onchange="alert('تغییر وضعیت به: ' + this.value + ' (در حالت ایستا، این تغییر ذخیره نمی‌شود)')">
+              <option value="active">فعال</option>
+              <option value="inactive">غیرفعال</option>
+              <option value="pending">در انتظار</option>
+              <option value="expired" selected>منقضی شده</option>
+            </select>
+          </td>
+          <td>
+            <a href="#" class="delete-btn">حذف</a>
+          </td>
+        </tr>
+        <!-- ردیف‌های بیشتر می‌توانند اینجا اضافه شوند -->
+      </tbody>
+    </table>
+
+    <div class="back-to-dashboard">
+      <a href="#">بازگشت به داشبورد</a> <!-- لینک به داشبورد ایستا -->
+    </div>
+  </div>
+
+  <!-- حذف کامل بخش جاوا اسکریپت loadSubscriptions -->
+  <!-- اگر نیاز به تعامل بیشتر باشد، می‌توان جاوا اسکریپت اضافه کرد -->
+</body>
+</html>
