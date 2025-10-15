@@ -2,15 +2,21 @@ const User = require("../models/User");
 const fs = require("fs");
 const path = require("path");
 
-// مسیر Volume Liara
+// مسیر Volume در Liara
 const uploadDir = "/uploads";
 
-// اطمینان از وجود پوشه uploads
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// بررسی وجود مسیر بدون ایجاد پوشه
+try {
+  if (!fs.existsSync(uploadDir)) {
+    console.warn("⚠️ مسیر /uploads هنوز در دسترس نیست (ممکن است Liara هنوز دیسک را mount نکرده باشد)");
+  } else {
+    console.log("✅ مسیر /uploads در دسترس است.");
+  }
+} catch (err) {
+  console.error("❌ خطا هنگام بررسی مسیر /uploads:", err);
 }
 
-// گرفتن پروفایل
+// 📌 گرفتن پروفایل
 const getProfile = async (req, res) => {
   try {
     if (!req.user || !req.user.id) {
@@ -18,7 +24,6 @@ const getProfile = async (req, res) => {
     }
 
     const user = await User.findById(req.user.id);
-
     if (!user) {
       return res.status(404).json({ success: false, message: "کاربر یافت نشد" });
     }
@@ -44,7 +49,7 @@ const getProfile = async (req, res) => {
   }
 };
 
-// آپدیت پروفایل (نام اجباری + عکس اختیاری)
+// 📌 آپدیت پروفایل (نام اجباری + عکس اختیاری)
 const updateProfile = async (req, res) => {
   try {
     if (!req.user || !req.user.id) {
@@ -59,7 +64,6 @@ const updateProfile = async (req, res) => {
     // مسیر عکس فقط اگر فایل آپلود شده باشد
     const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
 
-    // آپدیت فقط فیلدهایی که مقدار دارند
     const updatedUser = await User.updateProfile(req.user.id, name, imagePath);
 
     res.json({
