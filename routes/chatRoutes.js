@@ -13,7 +13,7 @@ if (!fs.existsSync(mediaUploadDir)) {
   console.warn("⚠️ مسیر /uploads/messages هنوز در دسترس نیست. مطمئن شوید Volume mount شده است!");
 }
 
-// تنظیمات multer برای فایل‌های media
+// تنظیمات multer برای فایل‌ها
 const mediaStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, mediaUploadDir);
@@ -36,17 +36,23 @@ const mediaUpload = multer({
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
 });
 
-// 🔹 پیام متنی بدون فایل
-router.post("/send-message", chatController.sendMessage);
+// 🔹 ارسال پیام (متنی یا فایل)
+// اگر فایل ارسال شود، multer آن را در req.file قرار می‌دهد
+router.post("/send-message", mediaUpload.single("file"), chatController.sendMessage);
 
-// 🔹 آپلود ویس یا عکس
-router.post("/send-message-file", mediaUpload.single("file"), chatController.sendMessage);
-
-// بقیه روت‌ها
+// 🔹 دریافت لیست چت‌ها
 router.get("/chat-list/:userId", chatController.getChatList);
+
+// 🔹 دریافت مکالمه بین دو کاربر
 router.get("/conversation/:userId/:friendId", chatController.getConversation);
+
+// 🔹 علامت‌گذاری پیام به عنوان خوانده شده
 router.patch("/messages/:id/read", chatController.markAsRead);
+
+// 🔹 حذف کامل مکالمه و پیام‌های بین دو کاربر
 router.delete("/conversation/:userId/:friendId", chatController.deleteConversation);
+
+// 🔹 بررسی وضعیت آنلاین کاربر
 router.get("/user/:userId/online", (req, res) => {
   const onlineUsers = req.app.locals.onlineUsers || new Map();
   const isOnline = onlineUsers.has(req.params.userId);
