@@ -1,39 +1,71 @@
 const mysql = require("mysql2/promise");
 require("dotenv").config();
 
-let connection = null;
+let pool;
 
+// تابع اصلی اتصال به دیتابیس
 async function connectDB() {
   try {
-    // اتصال اولیه بدون دیتابیس
-    const tempConnection = await mysql.createConnection({
+    // ساخت Pool با تنظیمات پایدار
+    pool = mysql.createPool({
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      multipleStatements: true,
-    });
-
-    // ساخت دیتابیس اگر وجود نداشت
-    await tempConnection.query(`
-      CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`
-      CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-    `);
-    console.log(`✅ Database '${process.env.DB_NAME}' is ready`);
-
-    // اتصال اصلی به دیتابیس
-    connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
+      port: process.env.DB_PORT || 3306,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
       multipleStatements: true,
+      // زمان‌های طولانی‌تر برای اطمینان از پایداری
+      connectTimeout: 20000, // 20 ثانیه
+      idleTimeout: 0,        // نذار idle timeout داشته باشه
     });
-    console.log("✅ MySQL connected");
 
-    // --- جدول users ---
-    await connection.query(`
+    console.log("⏳ Testing MySQL connection...");
+    const [rows] = await pool.query("SELECT 1");
+    console.log("✅ MySQL connection pool established");
+
+    // ساخت جداول در صورت نیاز
+    await initTables();
+
+    // هر 5 دقیقه یک ping برای زنده نگه داشتن اتصال
+    setInterval(async () => {
+      try {
+        await pool.query("SELECT 1");
+        // console.log("🟢 MySQL keep-alive ping");
+      } catch (err) {
+        console.error("⚠️ MySQL ping failed, reconnecting...", err.message);
+        await reconnectDB();
+      }
+    }, 5 * 60 * 1000);
+
+  } catch (err) {
+    console.error("❌ MySQL connection error:", err);
+    setTimeout(connectDB, 5000); // بعد از ۵ ثانیه تلاش مجدد
+  }
+}
+
+// تابع بازیابی اتصال در صورت قطع شدن
+async function reconnectDB() {
+  try {
+    if (pool) {
+      await pool.end().catch(() => {});
+    }
+    console.log("♻️ Reconnecting to MySQL...");
+    await connectDB();
+  } catch (err) {
+    console.error("❌ Reconnect failed, retrying in 5s...", err);
+    setTimeout(reconnectDB, 5000);
+  }
+}
+
+// تابع ساخت جداول
+async function initTables() {
+  try {
+    const conn = await pool.getConnection();
+
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         userId VARCHAR(50) DEFAULT NULL,
@@ -59,10 +91,8 @@ async function connectDB() {
         PRIMARY KEY (id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log("✅ Table 'users' is ready");
 
-    // --- جدول email_verifications ---
-    await connection.query(`
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS email_verifications (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         email VARCHAR(255) NOT NULL,
@@ -73,10 +103,8 @@ async function connectDB() {
         INDEX idx_email (email)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log("✅ Table 'email_verifications' is ready");
 
-    // --- جدول user_stats ---
-    await connection.query(`
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS user_stats (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         user_id INT UNSIGNED NOT NULL,
@@ -90,10 +118,8 @@ async function connectDB() {
           REFERENCES users(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log("✅ Table 'user_stats' is ready");
 
-    // --- جدول tickets ---
-    await connection.query(`
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS tickets (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         user_id INT UNSIGNED NOT NULL,
@@ -107,10 +133,8 @@ async function connectDB() {
           REFERENCES users(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log("✅ Table 'tickets' is ready");
 
-    // --- جدول subscriptions ---
-    await connection.query(`
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS subscriptions (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         user_id INT UNSIGNED NOT NULL,
@@ -123,10 +147,8 @@ async function connectDB() {
           REFERENCES users(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log("✅ Table 'subscriptions' is ready");
 
-    // --- جدول messages ---
-    await connection.query(`
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS messages (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         sender_user_id INT UNSIGNED NOT NULL,
@@ -146,10 +168,8 @@ async function connectDB() {
           REFERENCES messages(id) ON DELETE SET NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log("✅ Table 'messages' is ready");
 
-    // --- جدول friend_requests ---
-    await connection.query(`
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS friend_requests (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         sender_id INT UNSIGNED NOT NULL,
@@ -164,10 +184,8 @@ async function connectDB() {
           REFERENCES users(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log("✅ Table 'friend_requests' is ready");
 
-    // --- جدول friends ---
-    await connection.query(`
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS friends (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         user_id INT UNSIGNED NOT NULL,
@@ -179,10 +197,8 @@ async function connectDB() {
         FOREIGN KEY (friend_id) REFERENCES users(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log("✅ Table 'friends' is ready");
 
-    // --- جدول conversations ---
-    await connection.query(`
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS conversations (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
         user1_id INT UNSIGNED NOT NULL,
@@ -194,18 +210,19 @@ async function connectDB() {
         FOREIGN KEY (user2_id) REFERENCES users(id) ON DELETE CASCADE
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
-    console.log("✅ Table 'conversations' is ready");
+
+    conn.release();
+    console.log("✅ All tables verified");
 
   } catch (err) {
-    console.error("❌ MySQL connection error:", err);
-    process.exit(1);
+    console.error("❌ Error while creating tables:", err);
   }
 }
 
+// برای گرفتن pool از بخش‌های دیگر
 function getDB() {
-  if (!connection)
-    throw new Error("❌ DB not connected. Call connectDB() first.");
-  return connection;
+  if (!pool) throw new Error("❌ DB not connected. Call connectDB() first.");
+  return pool;
 }
 
 module.exports = { connectDB, getDB };
