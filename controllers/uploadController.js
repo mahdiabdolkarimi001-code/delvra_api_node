@@ -1,12 +1,18 @@
 const path = require("path");
 const fs = require("fs");
 
-// مسیر Volume writeable Liara
+// مسیر Volume Liara (قابل نوشتن)
 const uploadDir = "/uploads/messages";
 
-// اطمینان از وجود پوشه
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// بررسی در دسترس بودن مسیر، بدون mkdir
+try {
+  if (!fs.existsSync(uploadDir)) {
+    console.warn("⚠️ مسیر /uploads/messages هنوز در دسترس نیست (ممکن است Liara هنوز دیسک را mount نکرده باشد)");
+  } else {
+    console.log("✅ مسیر /uploads/messages در دسترس است.");
+  }
+} catch (err) {
+  console.error("❌ خطا در بررسی مسیر:", err);
 }
 
 const uploadMedia = (req, res) => {
@@ -14,7 +20,8 @@ const uploadMedia = (req, res) => {
     return res.status(400).json({ success: false, message: "فایل آپلود نشد" });
   }
 
-  const filePath = path.join("/uploads/messages", req.file.filename); // مسیر قابل دسترسی از مرورگر یا اپ
+  // مسیر فایل برای نمایش در فرانت‌اند
+  const filePath = `/uploads/messages/${req.file.filename}`;
   return res.json({ success: true, url: filePath });
 };
 
