@@ -8,6 +8,7 @@ async function connectDB() {
     // اتصال اولیه بدون دیتابیس
     const tempConnection = await mysql.createConnection({
       host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       multipleStatements: true,
@@ -20,9 +21,10 @@ async function connectDB() {
     `);
     console.log(`✅ Database '${process.env.DB_NAME}' is ready`);
 
-    // اتصال اصلی
+    // اتصال اصلی به دیتابیس
     connection = await mysql.createConnection({
       host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
@@ -30,7 +32,7 @@ async function connectDB() {
     });
     console.log("✅ MySQL connected");
 
-    // جدول users
+    // --- جدول users ---
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -59,7 +61,7 @@ async function connectDB() {
     `);
     console.log("✅ Table 'users' is ready");
 
-    // جدول email_verifications
+    // --- جدول email_verifications ---
     await connection.query(`
       CREATE TABLE IF NOT EXISTS email_verifications (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -73,7 +75,7 @@ async function connectDB() {
     `);
     console.log("✅ Table 'email_verifications' is ready");
 
-    // جدول user_stats
+    // --- جدول user_stats ---
     await connection.query(`
       CREATE TABLE IF NOT EXISTS user_stats (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -90,7 +92,7 @@ async function connectDB() {
     `);
     console.log("✅ Table 'user_stats' is ready");
 
-    // جدول tickets
+    // --- جدول tickets ---
     await connection.query(`
       CREATE TABLE IF NOT EXISTS tickets (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -107,7 +109,7 @@ async function connectDB() {
     `);
     console.log("✅ Table 'tickets' is ready");
 
-    // جدول subscriptions
+    // --- جدول subscriptions ---
     await connection.query(`
       CREATE TABLE IF NOT EXISTS subscriptions (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -123,7 +125,7 @@ async function connectDB() {
     `);
     console.log("✅ Table 'subscriptions' is ready");
 
-    // جدول messages
+    // --- جدول messages ---
     await connection.query(`
       CREATE TABLE IF NOT EXISTS messages (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -146,7 +148,7 @@ async function connectDB() {
     `);
     console.log("✅ Table 'messages' is ready");
 
-    // جدول friend_requests
+    // --- جدول friend_requests ---
     await connection.query(`
       CREATE TABLE IF NOT EXISTS friend_requests (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -164,7 +166,7 @@ async function connectDB() {
     `);
     console.log("✅ Table 'friend_requests' is ready");
 
-    // ✅ جدول friends (اصلاح‌شده)
+    // --- جدول friends ---
     await connection.query(`
       CREATE TABLE IF NOT EXISTS friends (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -179,7 +181,7 @@ async function connectDB() {
     `);
     console.log("✅ Table 'friends' is ready");
 
-    // جدول conversations
+    // --- جدول conversations ---
     await connection.query(`
       CREATE TABLE IF NOT EXISTS conversations (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT,

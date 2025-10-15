@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت کاربران | Delvra Admin</title>
+    <!-- فونت وزیرمتن برای ظاهر فارسی بهتر -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikdizaj/Vazirmatn@v3.0.0/dist/font/Vazirmatn.css">
+    <style>
+        /* --- متغیرهای نئون --- */
+        :root {
+            --neon-pink: #ff007f;
+            --neon-purple: #9d00ff;
+            --dark-bg: #0a0a0a;
+            --light-text: #e0e0e0;
+            --table-border: #330033;
+        }
+
+        /* --- استایل عمومی و پس‌زمینه --- */
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* --- سایدبار (Sidebar) --- */
+        .sidebar {
+            width: 250px;
+            background-color: #111;
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            right: 0;
+            border-left: 1px solid var(--table-border);
+        }
+
+        .sidebar h2 {
+            color: var(--neon-pink);
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li a {
+            display: block;
+            padding: 12px 20px;
+            color: var(--light-text);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #222;
+            color: var(--neon-purple);
+            text-shadow: 0 0 8px var(--neon-purple);
+        }
+
+        /* --- محتوای اصلی (Main Content) --- */
+        .main-content {
+            margin-right: 270px; /* فضای مورد نیاز برای سایدبار */
+            padding: 30px;
+        }
+
+        h1 {
+            color: var(--neon-purple);
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 7px var(--neon-purple), 0 0 15px var(--neon-purple);
+        }
+
+        /* --- جدول کاربران --- */
+        #usersTable {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 0 15px rgba(157, 0, 255, 0.5);
+            background-color: #1a1a1a;
+        }
+
+        #usersTable th, #usersTable td {
+            padding: 12px 15px;
+            border: 1px solid var(--table-border);
+            text-align: right;
+        }
+
+        #usersTable th {
+            background-color: #330033;
+            color: var(--neon-pink);
+            text-transform: uppercase;
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--neon-pink);
+        }
+
+        #usersTable tr:nth-child(even) {
+            background-color: #151515;
+        }
+
+        #usersTable tr:hover {
+            background-color: #280028;
+            box-shadow: inset 0 0 10px var(--neon-purple);
+        }
+
+        /* --- دکمه حذف (Delete Button) --- */
+        .delete-btn {
+            background-color: #5c0000;
+            color: #ffaaaa;
+            border: 1px solid #ff0000;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+
+        .delete-btn:hover {
+            background-color: #8b0000;
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+
+        /* افکت لودینگ (برای فراخوانی‌ها) */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--neon-purple);
+            text-shadow: 0 0 8px var(--neon-purple);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- سایدبار ثابت با استایل نئونی -->
+    <div class="sidebar">
+        <h2>Delvra Admin</h2>
+        <ul>
+            <li><a href="/dashboard">داشبورد</a></li>
+            <li><a href="#">سفارشات</a></li>
+            <li><a href="/admin/usersPage" style="background-color: #222; color: var(--neon-purple); text-shadow: 0 0 8px var(--neon-purple);">مدیریت کاربران</a></li>
+            <li><a href="#">تنظیمات</a></li>
+        </ul>
+    </div>
+
+    <!-- محتوای اصلی صفحه -->
+    <div class="main-content">
+        <h1>مدیریت کاربران</h1>
+
+        <!-- جدول کاربران -->
+        <table id="usersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>نام</th>
+                    <th>ایمیل</th>
+                    <th>شهر</th>
+                    <th>جنسیت</th>
+                    <th>عملیات</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <!-- داده ها توسط جاوا اسکریپت وارد خواهند شد -->
+                <tr>
+                    <td colspan="6" class="loading">در حال بارگذاری کاربران...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- کدهای جاوا اسکریپت (بدون تغییر در منطق) -->
+    <script>
+        const userTableBody = document.getElementById('userTableBody');
+
+        // تابع کمکی برای رندر کردن جدول
+        function renderUsers(users) {
+            userTableBody.innerHTML = '';
+            if (!users || users.length === 0) {
+                userTableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">هیچ کاربری یافت نشد.</td></tr>';
+                return;
+            }
+
+            users.forEach(user => {
+                const row = userTableBody.insertRow();
+                row.insertCell().textContent = user.id;
+                row.insertCell().textContent = user.name;
+                row.insertCell().textContent = user.email;
+                row.insertCell().textContent = user.city;
+                row.insertCell().textContent = user.gender;
+
+                const operationsCell = row.insertCell();
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'حذف';
+                deleteButton.className = 'delete-btn';
+                deleteButton.onclick = () => deleteUser(user.id);
+                operationsCell.appendChild(deleteButton);
+            });
+        }
+
+        // تابع دریافت کاربران (API Call - دست نخورده)
+        async function fetchUsers() {
+            try {
+                // فرض می کنیم این آدرس بک اند شماست
+                const response = await fetch('/admin/users/data', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                        // در صورت نیاز، توکن‌های احراز هویت اینجا اضافه می‌شوند
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                // فرض می کنیم که بک اند یک آرایه از کاربران را برمی گرداند
+                renderUsers(data);
+
+            } catch (error) {
+                console.error("Error fetching users:", error);
+                userTableBody.innerHTML = `<tr><td colspan="6" style="color: red; text-align:center;">خطا در بارگذاری: ${error.message}</td></tr>`;
+            }
+        }
+
+        // تابع حذف کاربر (API Call - دست نخورده)
+        async function deleteUser(userId) {
+            if (!confirm(`آیا از حذف کاربر با آیدی ${userId} اطمینان دارید؟`)) {
+                return;
+            }
+            try {
+                // فرض می کنیم این آدرس بک اند شماست
+                const response = await fetch(`/admin/users/data/${userId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert(`کاربر ${userId} با موفقیت حذف شد.`);
+                    fetchUsers(); // رفرش کردن لیست پس از حذف
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'خطا در سرور هنگام حذف');
+                }
+            } catch (error) {
+                console.error("Error deleting user:", error);
+                alert(`حذف ناموفق بود: ${error.message}`);
+            }
+        }
+
+        // فراخوانی اولیه برای پر کردن جدول
+        fetchUsers();
+    </script>
+
+</body>
+</html>

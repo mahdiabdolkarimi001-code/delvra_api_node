@@ -1,5 +1,14 @@
 const EditProfile = require('../models/EditProfile');
+const fs = require('fs');
 const path = require('path');
+
+// مسیر Volume Liara
+const uploadDir = '/uploads';
+
+// اطمینان از وجود پوشه uploads
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const editProfileController = {
   getProfile: async (req, res) => {
@@ -18,23 +27,22 @@ const editProfileController = {
     const { userId } = req.params;
 
     try {
-      // گرفتن پروفایل فعلی برای حفظ تصاویر و فیلدهایی که ارسال نشده‌اند
       const currentUser = await EditProfile.getByUserId(userId);
       if (!currentUser) return res.status(404).json({ message: 'کاربر پیدا نشد' });
 
       const data = { ...req.body };
 
-      // مسیر فایل‌ها را اضافه کن اگر آپلود شده باشند، در غیر این صورت مقدار قبلی را نگه دار
+      // مدیریت فایل‌ها
       for (let i = 1; i <= 5; i++) {
         const fileField = `profile_image${i}`;
         if (req.files && req.files[fileField]) {
           data[fileField] = `/uploads/${req.files[fileField][0].filename}`;
         } else {
-          data[fileField] = currentUser[fileField] || null; 
+          data[fileField] = currentUser[fileField] || null;
         }
       }
 
-      // سایر فیلدها هم اگر ارسال نشده باشند، مقدار قبلی را نگه داریم
+      // مدیریت سایر فیلدها
       const fields = ['name', 'age', 'city', 'gender', 'occupation', 'education', 'height', 'weight', 'bio'];
       fields.forEach(field => {
         if (data[field] === undefined) {

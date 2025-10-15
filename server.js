@@ -22,6 +22,8 @@ const friendRequestRoutes = require("./routes/friendRequestRoutes");
 const editProfileRoutes = require("./routes/editProfileController");
 const chatRoutes = require("./routes/chatRoutes");
 const userProfileRoutes = require("./routes/userProfileRoutes");
+const adminUserRoutes = require("./routes/adminUserRoutes");
+const homeRoutes = require("./routes/homeRoutes"); // اضافه شد
 
 // Middleware
 const errorHandler = require("./middleware/errorMiddleware");
@@ -44,8 +46,11 @@ app.use(
   })
 );
 
-// سرو فایل‌های آپلود شده به صورت استاتیک
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// ✅ سرو کردن فایل‌های آپلود شده روی دیسک Liara
+// مسیر دیسک: /uploads
+app.use("/uploads", express.static("/uploads"));
+
+console.log("🧩 ENV TEST:", process.env.DB_HOST, process.env.DB_NAME);
 
 (async () => {
   try {
@@ -66,6 +71,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
     app.use("/editProfile", editProfileRoutes);
     app.use("/", chatRoutes);
     app.use("/api/userprofile", userProfileRoutes);
+    app.use("/", adminUserRoutes);
+    app.use("/", homeRoutes); // اضافه شد
 
     // Middleware هندل خطاها
     app.use(errorHandler);
@@ -76,82 +83,66 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
     // WebSocket server
     const wss = new WebSocket.Server({ noServer: true });
 
-    // نگهداری کاربران آنلاین: map userId (string) -> ws
     const onlineUsers = new Map();
-    app.locals.onlineUsers = onlineUsers; // دسترسی از route
+    app.locals.onlineUsers = onlineUsers;
 
-    // upgrade برای WebSocket
     server.on("upgrade", (request, socket, head) => {
-      try {
-        const { url } = request;
-        if (!url) {
-          socket.destroy();
-          return;
-        }
+      const { url } = request;
+      if (!url) {
+        socket.destroy();
+        return;
+      }
 
-        if (url.startsWith("/ws/chat/")) {
-          wss.handleUpgrade(request, socket, head, (ws) => {
-            wss.emit("connection", ws, request);
-          });
-        } else {
-          socket.destroy();
-        }
-      } catch (err) {
-        console.error("Upgrade error:", err);
-        try { socket.destroy(); } catch (_) {}
+      if (url.startsWith("/ws/chat/")) {
+        wss.handleUpgrade(request, socket, head, (ws) => {
+          wss.emit("connection", ws, request);
+        });
+      } else {
+        socket.destroy();
       }
     });
 
-    // اتصال WebSocket
     wss.on("connection", (ws, request) => {
-      try {
-        const url = request.url || "";
-        const parts = url.split("/");
-        const userId = parts.length > 0 ? parts[parts.length - 1] : null;
+      const url = request.url || "";
+      const parts = url.split("/");
+      const userId = parts.length > 0 ? parts[parts.length - 1] : null;
 
-        if (!userId) {
-          ws.close(1008, "Missing userId in path");
-          return;
-        }
-
-        // ثبت کاربر آنلاین با زمان اتصال
-        ws.userId = userId;
-        ws.connectedAt = new Date();
-        onlineUsers.set(userId, ws);
-
-        console.log(`🟢 WS connected: userId=${userId} (clients=${onlineUsers.size})`);
-
-        ws.send(JSON.stringify({ type: "ws_connected", userId }));
-
-        ws.on("message", (raw) => {
-          try {
-            const data = JSON.parse(raw);
-            console.log("WS message from", userId, data);
-
-            if (data.type === "ping") {
-              ws.send(JSON.stringify({ type: "pong", time: new Date().toISOString() }));
-            }
-          } catch (e) {
-            console.error("WS message parse error:", e);
-          }
-        });
-
-        ws.on("close", () => {
-          if (ws.userId) {
-            onlineUsers.delete(ws.userId);
-            console.log(`🔴 WS disconnected: userId=${ws.userId} (clients=${onlineUsers.size})`);
-          }
-        });
-
-        ws.on("error", (err) => {
-          console.error("WS error for user", userId, err);
-        });
-      } catch (err) {
-        console.error("WS connection handling error:", err);
+      if (!userId) {
+        ws.close(1008, "Missing userId in path");
+        return;
       }
+
+      ws.userId = userId;
+      ws.connectedAt = new Date();
+      onlineUsers.set(userId, ws);
+
+      console.log(`🟢 WS connected: userId=${userId} (clients=${onlineUsers.size})`);
+
+      ws.send(JSON.stringify({ type: "ws_connected", userId }));
+
+      ws.on("message", (raw) => {
+        try {
+          const data = JSON.parse(raw);
+          if (data.type === "ping") {
+            ws.send(JSON.stringify({ type: "pong", time: new Date().toISOString() }));
+          }
+        } catch (e) {
+          console.error("WS message parse error:", e);
+        }
+      });
+
+      ws.on("close", () => {
+        if (ws.userId) {
+          onlineUsers.delete(ws.userId);
+          console.log(`🔴 WS disconnected: userId=${ws.userId} (clients=${onlineUsers.size})`);
+        }
+      });
+
+      ws.on("error", (err) => {
+        console.error("WS error for user", userId, err);
+      });
     });
 
-    // helper: ارسال payload به یک کاربر اگر آنلاین باشه
     app.locals.sendToUser = (userId, payload) => {
       try {
         const ws = onlineUsers.get(String(userId));
@@ -163,9 +154,8 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
       }
     };
 
-    // شروع سرور روی پورت
-    server.listen(PORT, "0.0.0.0", () => {
-      console.log(`✅ Server + WebSocket running on http://192.168.43.30:${PORT}`);
+    server.listen(PORT, () => {
+      console.log(`✅ Server + WebSocket running on port ${PORT}`);
     });
 
   } catch (err) {

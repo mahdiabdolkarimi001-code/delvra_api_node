@@ -1,4 +1,14 @@
 const User = require("../models/User");
+const fs = require("fs");
+const path = require("path");
+
+// مسیر Volume Liara
+const uploadDir = "/uploads";
+
+// اطمینان از وجود پوشه uploads
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // گرفتن پروفایل
 const getProfile = async (req, res) => {

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delvra | بهترین تجربه موبایل</title>
+    
+    <!-- فونت وزیرمتن برای خوانایی عالی در زبان فارسی -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikdizaj/Vazirmatn@v3.0.0/dist/font/Vazirmatn.css">
+    
+    <style>
+        /* --- متغیرهای رنگی مدرن (با الهام از لوگو) --- */
+        :root {
+            --main-bg: #ffffff; /* پس‌زمینه سفید برای طراحی مینیمال */
+            --dark-text: #1a1a1a;
+            --primary-color: #7F00FF; /* بنفش الکتریک (الهام از نئون) */
+            --secondary-color: #FF007F; /* صورتی برجسته */
+            --light-gray: #f4f4f4;
+            --cta-hover: #5d00bf;
+        }
+
+        /* --- تنظیمات پایه و فونت --- */
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--main-bg);
+            color: var(--dark-text);
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            text-align: right;
+            line-height: 1.7;
+        }
+
+        /* --- هدر و نویگیشن --- */
+        header {
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800; /* Extra Bold */
+            color: var(--primary-color);
+            /* افزودن کمی درخشش ظریف به جای نئون خشن */
+            text-shadow: 0 0 2px rgba(127, 0, 255, 0.3);
+            letter-spacing: -1px;
+        }
+        
+        /* --- بخش اصلی قهرمان (Hero Section) --- */
+        .hero {
+            text-align: center;
+            padding: 100px 5%;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 900;
+            line-height: 1.2;
+            color: var(--dark-text);
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+            color: #555;
+        }
+
+        /* --- دکمه دانلود (CTA) --- */
+        .download-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 35px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px; /* دکمه گرد و مدرن */
+            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+            display: inline-block;
+            box-shadow: 0 8px 20px rgba(127, 0, 255, 0.4);
+        }
+
+        .download-btn:hover {
+            background-color: var(--cta-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(127, 0, 255, 0.6);
+        }
+
+        /* --- بخش ویژگی‌ها --- */
+        .features {
+            padding: 80px 5%;
+            background-color: var(--light-gray);
+            display: flex;
+            justify-content: space-around;
+            gap: 30px;
+            flex-wrap: wrap; /* واکنش‌گرا */
+        }
+
+        .feature {
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+            background-color: var(--main-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature h3 {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .feature h3::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 3px;
+            background: var(--primary-color);
+            margin: 8px auto 0;
+            border-radius: 1.5px;
+        }
+
+        .feature p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* --- فوتر --- */
+        footer {
+            text-align: center;
+            padding: 25px 5%;
+            border-top: 1px solid var(--light-gray);
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        /* --- واکنش‌گرایی برای موبایل --- */
+        @media (max-width: 900px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero p {
+                font-size: 1.1rem;
+            }
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            .feature {
+                max-width: 90%;
+            }
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .logo {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <header>
+        <!-- جایگزینی تگ h1 قدیمی با کلاس لوگو برای حفظ استایل نئونی/برند -->
+        <div class="logo">Delvra</div>
+        <!-- Navigation Placeholder (در طراحی مدرن اغلب نویگیشن در هدر حذف و به منو (همبرگر) تبدیل می‌شود، اما برای حفظ ساختار، لینک‌ها را حذف کردم) -->
+    </header>
+
+    <!-- بخش اصلی قهرمان (Hero Section) -->
+    <div class="hero">
+        <h1>دنیای جدید خدمات با اپلیکیشن Delvra</h1>
+        <p>با اپلیکیشن ما می‌توانید به راحتی خدمات ما را دریافت کنید، با دوستان خود ارتباط برقرار کنید و از امکانات ویژه بهره‌مند شوید.</p>
+
+        <div class="download-section">
+            <a href="/downloads/app.apk" class="download-btn" download>دانلود اپلیکیشن برای اندروید</a>
+        </div>
+    </div>
+
+    <!-- بخش ویژگی‌ها با طراحی مینیمال کارت‌ها -->
+    <section class="features">
+        <div class="feature">
+            <h3>دسترسی سریع</h3>
+            <p>توضیح ویژگی اول اپلیکیشن: دسترسی فوری به تمام خدمات اصلی بدون نیاز به ورودهای مکرر.</p>
+        </div>
+        <div class="feature">
+            <h3>تجربه کاربری روان</h3>
+            <p>توضیح ویژگی دوم اپلیکیشن: طراحی مدرن و واکنش‌گرا برای سادگی و زیبایی در هر دستگاهی.</p>
+        </div>
+        <div class="feature">
+            <h3>امکانات ویژه</h3>
+            <p>توضیح ویژگی سوم اپلیکیشن: بهره‌مندی از امکاناتی که تنها برای کاربران اپلیکیشن در دسترس هستند.</p>
+        </div>
+    </section>
+
+    <footer>
+        تمامی حقوق محفوظ است © 2025 | طراحی شده با بهترین استاندارهای UI/UX جهانی
+    </footer>
+</body>
+</html>

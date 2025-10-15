@@ -1,16 +1,11 @@
-// routes/uploadRoutes.js
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
 const { uploadMedia } = require("../controllers/uploadController");
 
-// دایرکتوری آپلود را اگر نبود ایجاد کن
-const uploadDir = path.join(__dirname, "..", "uploads", "messages");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+// مسیر Volume writeable Liara
+const uploadDir = "/uploads/messages";
 
 // تنظیمات multer
 const storage = multer.diskStorage({
@@ -18,14 +13,14 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
+    const ext = path.extname(file.originalname).toLowerCase();
     const name = Date.now() + "-" + Math.round(Math.random() * 1e9) + ext;
     cb(null, name);
   },
 });
 
+// فیلتر فایل
 const fileFilter = (req, file, cb) => {
-  // اجازهٔ انواع تصویر، ویدیو و صوت
   const allowed = /jpeg|jpg|png|gif|mp4|mov|mkv|webm|aac|mp3|wav|m4a/;
   const ext = path.extname(file.originalname).toLowerCase();
   if (allowed.test(ext)) {

@@ -4,9 +4,13 @@ const multer = require('multer');
 const path = require('path');
 const editProfileController = require('../controllers/editProfileController');
 
+// مسیر Volume Liara
+const uploadDir = '/uploads';
+
+// تنظیمات multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../uploads'));
+    cb(null, uploadDir); // مسیر writeable Liara
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -17,6 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// Routes
 router.get('/:userId', editProfileController.getProfile);
 
 router.put(
